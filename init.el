@@ -326,7 +326,7 @@ you should place your code here."
     (interactive)
     (find-file "~/.spacemacs.d/init.el"))
   (global-set-key (kbd "<f2>") 'open-my-init-file)
-  (global-set-key (kbd "s-r") 'helm-recentf)
+  (global-set-key (kbd "s-r") 'helm-mini)
   (global-set-key (kbd "s-p") 'helm-projectile-find-file)
   ;; for mouse smooth
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
@@ -341,9 +341,9 @@ you should place your code here."
   (global-set-key [f9] 'execute-c-program)
   (ispell-change-dictionary "american" t)
   (global-set-key (kbd "s-f") 'helm-swoop)
-  (define-key evil-motion-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
-  (define-key evil-motion-state-map (kbd "C-n") 'evil-next-line)
-  (define-key evil-motion-state-map (kbd "C-p") 'evil-previous-line)
+  (define-key evil-motion-state-map (kbd "c-e") 'mwim-end-of-code-or-line)
+  ;; (define-key evil-motion-state-map (kbd "C-n") 'evil-next-line)
+  ;; (define-key evil-motion-state-map (kbd "C-p") 'evil-previous-line)
   (setq-default evil-escape-key-sequence "kj")
   )
 
