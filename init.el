@@ -141,8 +141,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+   dotspacemacs-default-font '("Menlo"
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -309,10 +309,18 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-(setq configuration-layer--elpa-archives
-      '(("melpa-cn" . "http://elpa.zilongshanren.com/melpa/")
-	("org-cn"   . "http://elpa.zilongshanren.com/org/")
-	("gnu-cn"   . "http://elpa.zilongshanren.com/gnu/")))
+  (setq configuration-layer--elpa-archives
+        '(("melpa-cn" . "http://elpa.zilongshanren.com/melpa/")
+          ("org-cn"   . "http://elpa.zilongshanren.com/org/")
+          ("gnu-cn"   . "http://elpa.zilongshanren.com/gnu/")))
+
+  ;; fix 'exec-path-from-shell-arguments' error
+  (setq exec-path-from-shell-check-startup-files nil)
+  ;; fix aspell error
+  ;; use apsell as ispell backend
+  (setq-default ispell-program-name "aspell")
+  ;; use American English as ispell default dictionary
+  (ispell-change-dictionary "american" t)
   )
 
 (defun dotspacemacs/user-config ()
@@ -343,7 +351,7 @@ you should place your code here."
     (shell-command runc))
   (global-set-key [f9] 'execute-c-program)
   (ispell-change-dictionary "american" t)
-  (define-key evil-motion-state-map (kbd "c-e") 'mwim-end-of-code-or-line)
+  (define-key evil-motion-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
   ;; (define-key evil-motion-state-map (kbd "C-n") 'evil-next-line)
   ;; (define-key evil-motion-state-map (kbd "C-p") 'evil-previous-line)
   (setq-default evil-escape-key-sequence "kj")
@@ -362,6 +370,14 @@ you should place your code here."
    (quote
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(evil-want-Y-yank-to-eol nil)
+ '(org-agenda-files (quote ("~/org-notes/tasks.org" "~/org-notes/gtd.org" "~/org-notes/journal.org")))
+ '(org-capture-templates
+       '(
+         ("t" "Todo" entry (file+headline "~/org-notes/gtd.org" "Tasks")
+          "* TODO %?\n %U \n %a")
+         ("j" "Journal" entry (file+datetree "~/org-notes/journal.org")
+          "* %?\nEntered on %U\n %i\n %a")))
+
  '(package-selected-packages
    (quote
     (yaml-mode org-projectile org-present org-pomodoro alert log4e gntp org-download markdown-toc markdown-mode htmlize gnuplot git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct flycheck-pos-tip pos-tip flycheck magit-popup git-commit with-editor diff-hl company-statistics company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete unfill mwim mmm-mode helm-company helm-c-yasnippet flyspell-correct-helm youdao-dictionary names chinese-word-at-point disaster company-c-headers cmake-mode clang-format wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger evil-magit magit groovy-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed ace-link ace-jump-helm-line helm helm-core popup dash async aggressive-indent adaptive-wrap ace-window))))
