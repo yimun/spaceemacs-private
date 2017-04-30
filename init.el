@@ -30,12 +30,16 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     ruby
      ;; ivy
      helm
      html
      javascript
-     python
+     java
      yaml
+     (python :variables
+             python-enable-yapf-format-on-save nil
+             python-test-runner 'pytest)
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)
      (chinese :packages youdao-dictionary fcitx
@@ -58,6 +62,7 @@ values."
      spell-checking
      syntax-checking
      version-control
+     osx
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -268,11 +273,12 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers 'nil
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
-   ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
+   ;; If non-nil smartparens-str
+ict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
@@ -335,10 +341,15 @@ you should place your code here."
     (interactive)
     (find-file "~/.spacemacs.d/init.el"))
   (global-set-key (kbd "<f2>") 'open-my-init-file)
+  (global-set-key (kbd "<f5>") 'dotspacemacs/sync-configuration-layers)
   (global-set-key (kbd "s-r") 'helm-mini)
   (global-set-key (kbd "s-p") 'helm-projectile-find-file)
   (global-set-key (kbd "s-f") 'helm-swoop)
   (global-set-key (kbd "s-F") 'helm-projectile-ag)
+  (global-set-key (kbd "s-g") 'magit-status)
+  (global-set-key (kbd "s-w") 'kill-this-buffer)
+  (global-set-key (kbd "s-t") 'org-todo-list)
+  (global-set-key (kbd "s-e") 'neotree-toggle)
   ;; for mouse smooth
   (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
   ;; Run C programs directly from within emacs
@@ -354,13 +365,52 @@ you should place your code here."
   (define-key evil-motion-state-map (kbd "C-e") 'mwim-end-of-code-or-line)
   ;; (define-key evil-motion-state-map (kbd "C-n") 'evil-next-line)
   ;; (define-key evil-motion-state-map (kbd "C-p") 'evil-previous-line)
+  ;; (define-key evil-motion-state-map (kbd "vv") 'evil-inner-WORD)
   (setq-default evil-escape-key-sequence "kj")
   (global-set-key (kbd "s-d") 'youdao-dictionary-search)
+  ;; enable hungry delete mode
+  (global-hungry-delete-mode t)
+  ;; c cpp java indent 4 space
+  (setq c-basic-offset 4)
+  (delete-selection-mode 1)
 
-  )
+  ;; eclim
+  ;;(setq eclim-eclipse-dirs "/Applications/Eclipse.app/Contents/Eclipse"
+  ;;      eclim-executable "/Applications/Eclipse.app/Contents/Eclipse/eclim")
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
+  (setq scroll-margin 5)
+
+  ;; show full path in frame title
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
+  (setq evil-want-Y-yank-to-eol nil)
+  (setq org-agenda-files
+    (quote
+     ("~/org-notes/tasks.org" "~/org-notes/gtd.org" "~/org-notes/journal.org")))
+  (setq org-capture-templates
+    (quote
+     (("t" "Todo" entry
+       (file+headline "~/org-notes/gtd.org" "Tasks")
+       "* TODO %? \n %U \n %a")
+      ("j" "Journal" entry
+       (file+datetree "~/org-notes/journal.org")
+       "* %? \n Entered on %U \n %i \n%a"))))
+  (setq org-todo-keywords (quote ((sequence "TODO" "|" "DONE" "ABANDON"))))
+  (setq projectile-globally-ignored-directories
+    (quote
+     ("/build" ".idea" ".ensime_cache" ".eunit" ".git" ".hg" ".fslckout" "_FOSSIL_" ".bzr" "_darcs" ".tox" ".svn" ".stack-work")))
+  (setq projectile-globally-ignored-files (quote ("*.class" "TAGS")))
+
+)
+
+
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -369,21 +419,13 @@ you should place your code here."
  '(custom-safe-themes
    (quote
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
- '(evil-want-Y-yank-to-eol nil)
- '(org-agenda-files (quote ("~/org-notes/tasks.org" "~/org-notes/gtd.org" "~/org-notes/journal.org")))
- '(org-capture-templates
-       '(
-         ("t" "Todo" entry (file+headline "~/org-notes/gtd.org" "Tasks")
-          "* TODO %?\n %U \n %a")
-         ("j" "Journal" entry (file+datetree "~/org-notes/journal.org")
-          "* %?\nEntered on %U\n %i\n %a")))
-
  '(package-selected-packages
    (quote
-    (yaml-mode org-projectile org-present org-pomodoro alert log4e gntp org-download markdown-toc markdown-mode htmlize gnuplot git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct flycheck-pos-tip pos-tip flycheck magit-popup git-commit with-editor diff-hl company-statistics company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete unfill mwim mmm-mode helm-company helm-c-yasnippet flyspell-correct-helm youdao-dictionary names chinese-word-at-point disaster company-c-headers cmake-mode clang-format wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger evil-magit magit groovy-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed ace-link ace-jump-helm-line helm helm-core popup dash async aggressive-indent adaptive-wrap ace-window))))
+    (reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl meghanada groovy-imports pcache gradle-mode ensime sbt-mode scala-mode company-emacs-eclim eclim symon string-inflection helm-purpose window-purpose imenu-list browse-at-remote avy rvm ruby-tools ruby-test-mode rubocop rspec-mode robe rbenv rake minitest chruby bundler inf-ruby yaml-mode org-projectile org-present org-pomodoro alert log4e gntp org-download markdown-toc markdown-mode htmlize gnuplot git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct flycheck-pos-tip pos-tip flycheck magit-popup git-commit with-editor diff-hl company-statistics company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete unfill mwim mmm-mode helm-company helm-c-yasnippet flyspell-correct-helm youdao-dictionary names chinese-word-at-point disaster company-c-headers cmake-mode clang-format wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper ivy web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode company-anaconda anaconda-mode pythonic smeargle orgit magit-gitflow helm-gitignore gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger evil-magit magit groovy-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed ace-link ace-jump-helm-line helm helm-core popup dash async aggressive-indent adaptive-wrap ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+)
